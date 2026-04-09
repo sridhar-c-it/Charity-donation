@@ -1,99 +1,232 @@
-EXPERIMENT – 1
+🧪 MongoDB Experiments
+❤️ Charity Donation & Campaign Platform
+ # EXPERIMENT – 1: CRUD Operations (Donor Management)
+## Aim
+To perform CRUD operations for managing donor details.
 
-(CRUD Operations)
+## Description
+In a charity platform, donor information like ID, name, donation amount, and status is stored and managed.
 
-🔹 Aim
-To perform Create, Read, Update, and Delete operations.
+ Query
+```js
+ use charityDB
+
+// CREATE - Add donors
+db.donors.insertOne({
+  donorId: "DON101",
+  name: "Arun Kumar",
+  campaign: "Education Fund",
+  amount: 5000,
+  isActive: true
+})
+
+db.donors.insertMany([
+  {
+    donorId: "DON102",
+    name: "Priya Sharma",
+    campaign: "Health Care",
+    amount: 8000,
+    isActive: true
+  },
+  {
+    donorId: "DON103",
+    name: "Rahul Singh",
+    campaign: "Food Drive",
+    amount: 3000,
+    isActive: false
+  }
+])
+
+#// READ
+db.donors.find()
+db.donors.find({ amount: { $gt: 4000 } })
+
+#// UPDATE
+db.donors.updateOne(
+  { donorId: "DON101" },
+  { $set: { amount: 6000 } }
+)
+
+db.donors.updateMany(
+  { isActive: true },
+  { $set: { status: "Active" } }
+)
+
+// DELETE
+db.donors.deleteOne({ donorId: "DON103" })
+db.donors.deleteMany({ isActive: false })
+```
+
+### Output
+Donor records inserted, retrieved, updated, and deleted successfully.
+### Result
+CRUD operations for donor management were successfully performed.
+
+# EXPERIMENT – 2: Collection Creation (Platform Setup)
+## Aim
+To create and manage collections for the charity platform.
+
+### Description
+Collections such as donors, campaigns, and donations are required.
+
 🔹 Query
-use hrDB
--- CREATE
-db.employees.insertOne
-({ empId: "EMP101", name: "Ravi Kumar", department: "HR", salary: 40000, isActive: true }) 
-db.employees.insertMany
-([ { empId: "EMP102", name: "Anita Sharma", department: "IT", salary: 60000, isActive: true }, 
-{ empId: "EMP103", name: "Vikram Singh", department: "Finance", salary: 50000, isActive: false } ])
--- READ
-db.employees.find() db.employees.find({ salary: { $gt: 45000 } })
--- UPDATE
-db.employees.updateOne( { empId: "EMP101" }, { $set: { salary: 45000 } } )  db.employees.updateMany( { isActive: true }, { $set: { status: "Active" } } )
--- DELETE
-db.employees.deleteOne({ empId: "EMP103" }) db.employees.deleteMany({ isActive: false })
-🔹 O/P
-Documents inserted, retrieved, updated, and deleted successfully.
-🔹 Result
-CRUD operations were successfully performed.
+```js
+use charityDB
 
-EXPERIMENT – 2
+db.createCollection("donors")
 
-(Basic Collection Creation & Dropping)
+show collections
 
-🔹 Aim
-To create, display and drop a collection without constraints.
-🔹 Query
-use hrDB  db.createCollection("employees")  show collections  db.employees.drop()
-🔹 O/P
+db.donors.drop()
+```
+### Output
 Collection created, displayed, and dropped successfully.
-🔹 Result
-The employees collection was successfully created and dropped.
 
-EXPERIMENT – 3
+### Result
+Platform collections were successfully managed.
 
-(Collection with Required Fields & Data Types)
+# EXPERIMENT – 3: Donor Schema Validation
+## Aim
+To enforce required fields for donor data.
 
-🔹 Aim
-To enforce required fields using schema validation.
-🔹 Query
-db.createCollection("employees", { validator: { $jsonSchema: { bsonType: "object", required: ["empId", "name", "salary"], properties: { empId: { bsonType: "string" }, name: { bsonType: "string" }, salary: { bsonType: "int" }, isActive: { bsonType: "bool" } } } } })
-🔹 Valid Insert
-db.employees.insertOne({ empId: "EMP201", name: "Kiran", salary: 35000, isActive: true })
-🔹 Invalid Insert
-db.employees.insertOne({ empId: "EMP202", salary: 30000 })
-🔹 O/P
-Valid insert succeeds. Invalid insert fails with validation error.
-🔹 Result
-Schema validation enforced required fields.
+### Description
+Ensures donors must provide ID, name, and donation amount.
 
-EXPERIMENT – 4
+##3 Query
+```js
+db.createCollection("donors", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["donorId", "name", "amount"],
+      properties: {
+        donorId: { bsonType: "string" },
+        name: { bsonType: "string" },
+        amount: { bsonType: "int" },
+        isActive: { bsonType: "bool" }
+      }
+    }
+  }
+})
+```
+### Output
+Invalid donor data is rejected.
 
-(Advanced Validation – Enum, Range, Pattern)
+### Result
+Data integrity for donors was maintained.
 
-🔹 Aim
-To apply advanced validation rules.
-🔹 Query
-db.createCollection
-("departments", { validator: { $jsonSchema: { bsonType: "object", required: ["deptId", "deptName", "budget"], properties: { deptId: { bsonType: "string", pattern: "^DPT[0-9]{3}$" }, deptName: { enum: ["HR", "IT", "Finance", "Sales"] }, budget: { bsonType: "number", minimum: 10000, maximum: 1000000 } } } }, validationLevel: "strict", validationAction: "error" })
-🔹 Valid Insert
-db.departments.insertOne({ deptId: "DPT101", deptName: "IT", budget: 500000 })
-🔹 Invalid Insert
-db.departments.insertOne({ deptId: "101", deptName: "Admin", budget: 5000 })
-🔹 O/P
-Valid insert succeeds. Invalid insert fails.
-🔹 Result
-Advanced validation rules were successfully applied.
+# EXPERIMENT – 4: Campaign Validation (Advanced Rules)
+## Aim
+To apply validation rules for campaigns.
 
-EXPERIMENT – 5
+### Description
+Campaigns must follow rules like valid ID, type, and funding limits.
 
-(Modify Validation on Existing Collection)
+### Query
+```js
+db.createCollection("campaigns", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["campaignId", "campaignName", "targetAmount"],
+      properties: {
+        campaignId: {
+          bsonType: "string",
+          pattern: "^CMP[0-9]{3}$"
+        },
+        campaignName: {
+          enum: ["Education Fund", "Health Care", "Food Drive", "Disaster Relief"]
+        },
+        targetAmount: {
+          bsonType: "number",
+          minimum: 10000,
+          maximum: 10000000
+        }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+})
+```
+### Output
+Valid campaigns accepted, invalid ones rejected.
 
-🔹 Aim
-To add validation rules to an existing collection.
-🔹 Query
-db.createCollection("attendance") 
-db.runCommand({ collMod: "attendance", validator: { $jsonSchema: { bsonType: "object", required: ["empId", "date", "status"], properties: { empId: { bsonType: "string", pattern: "^EMP[0-9]{3}$" }, date: { bsonType: "string" }, status: { enum: ["Present", "Absent", "Leave"] } } } }, validationLevel: "moderate" })
-🔹 O/P
-{ ok: 1 }
-🔹 Result
-Validation rules were successfully modified.
+### Result
+Campaign validation rules were successfully applied.
 
-EXPERIMENT – 6
+# EXPERIMENT – 5: Donation Tracking Validation
+## Aim
+To validate donation records.
 
-(View & Verify Validation Rules)
+### Description
+Tracks donations with donor ID, campaign ID, date, and status.
 
-🔹 Aim
-To view validation rules applied to a collection.
-🔹 Query
-db.getCollectionInfos({ name: "departments" })
-🔹 O/P
-Displays validation schema including: required fields enum values pattern rules
-🔹 Result
-Validation rules were successfully viewed and verified.
+### Query
+```js
+db.createCollection("donations")
+
+db.runCommand({
+  collMod: "donations",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["donorId", "campaignId", "date", "status"],
+      properties: {
+        donorId: {
+          bsonType: "string",
+          pattern: "^DON[0-9]{3}$"
+        },
+        campaignId: {
+          bsonType: "string",
+          pattern: "^CMP[0-9]{3}$"
+        },
+        date: { bsonType: "string" },
+        status: {
+          enum: ["Completed", "Pending", "Failed"]
+        }
+      }
+    }
+  },
+  validationLevel: "moderate"
+})
+```
+### Output
+Only valid donation records are stored.
+
+### Result
+Donation tracking validation was successfully implemented.
+
+# EXPERIMENT – 6: View & Verify Validation Rules
+## Aim
+To view validation rules applied to campaigns collection.
+
+### Query
+```js
+db.getCollectionInfos({ name: "campaigns" })
+```
+### Output
+Displays validation schema including required fields, enum values, and patterns.
+
+### Result
+Validation rules were successfully verified.
+
+
+👉 This project represents a Charity Donation & Campaign Platform:
+
+🔹 Modules:
+👤 Donors → Manage donor details
+
+🎯 Campaigns → Fundraising campaigns
+
+💰 Donations → Track contributions
+
+🔹 Features:
+Data validation ensures accuracy
+
+Prevents invalid donations
+
+Supports real-time campaign tracking
+
+
+
