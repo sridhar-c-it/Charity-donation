@@ -7,7 +7,11 @@ To perform Create, Read, Update, and Delete operations.
 🔹 Query
 use hrDB
 -- CREATE
-db.employees.insertOne({ empId: "EMP101", name: "Ravi Kumar", department: "HR", salary: 40000, isActive: true })  db.employees.insertMany([ { empId: "EMP102", name: "Anita Sharma", department: "IT", salary: 60000, isActive: true }, { empId: "EMP103", name: "Vikram Singh", department: "Finance", salary: 50000, isActive: false } ])
+db.employees.insertOne
+({ empId: "EMP101", name: "Ravi Kumar", department: "HR", salary: 40000, isActive: true }) 
+db.employees.insertMany
+([ { empId: "EMP102", name: "Anita Sharma", department: "IT", salary: 60000, isActive: true }, 
+{ empId: "EMP103", name: "Vikram Singh", department: "Finance", salary: 50000, isActive: false } ])
 -- READ
 db.employees.find() db.employees.find({ salary: { $gt: 45000 } })
 -- UPDATE
@@ -56,7 +60,8 @@ EXPERIMENT – 4
 🔹 Aim
 To apply advanced validation rules.
 🔹 Query
-db.createCollection("departments", { validator: { $jsonSchema: { bsonType: "object", required: ["deptId", "deptName", "budget"], properties: { deptId: { bsonType: "string", pattern: "^DPT[0-9]{3}$" }, deptName: { enum: ["HR", "IT", "Finance", "Sales"] }, budget: { bsonType: "number", minimum: 10000, maximum: 1000000 } } } }, validationLevel: "strict", validationAction: "error" })
+db.createCollection
+("departments", { validator: { $jsonSchema: { bsonType: "object", required: ["deptId", "deptName", "budget"], properties: { deptId: { bsonType: "string", pattern: "^DPT[0-9]{3}$" }, deptName: { enum: ["HR", "IT", "Finance", "Sales"] }, budget: { bsonType: "number", minimum: 10000, maximum: 1000000 } } } }, validationLevel: "strict", validationAction: "error" })
 🔹 Valid Insert
 db.departments.insertOne({ deptId: "DPT101", deptName: "IT", budget: 500000 })
 🔹 Invalid Insert
@@ -73,7 +78,8 @@ EXPERIMENT – 5
 🔹 Aim
 To add validation rules to an existing collection.
 🔹 Query
-db.createCollection("attendance")  db.runCommand({ collMod: "attendance", validator: { $jsonSchema: { bsonType: "object", required: ["empId", "date", "status"], properties: { empId: { bsonType: "string", pattern: "^EMP[0-9]{3}$" }, date: { bsonType: "string" }, status: { enum: ["Present", "Absent", "Leave"] } } } }, validationLevel: "moderate" })
+db.createCollection("attendance") 
+db.runCommand({ collMod: "attendance", validator: { $jsonSchema: { bsonType: "object", required: ["empId", "date", "status"], properties: { empId: { bsonType: "string", pattern: "^EMP[0-9]{3}$" }, date: { bsonType: "string" }, status: { enum: ["Present", "Absent", "Leave"] } } } }, validationLevel: "moderate" })
 🔹 O/P
 { ok: 1 }
 🔹 Result
